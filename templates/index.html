@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Roblox Friends Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #eee;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeInDown 0.6s ease;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #00d9ff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+        }
+
+        .header p {
+            color: #aaa;
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: rgba(22, 33, 62, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .card h2 {
+            color: #00d9ff;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaa;
+            font-size: 0.95rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(15, 52, 96, 0.5);
+            border: 2px solid rgba(0, 217, 255, 0.2);
+            border-radius: 8px;
+            color: #eee;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #00d9ff;
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #e94560 0%, #ff6b9d 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(233, 69, 96, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #0f3460 0%, #00d9ff 100%);
+            color: white;
+            margin-right: 10px;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 217, 255, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: rgba(15, 52, 96, 0.4);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid rgba(0, 217, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .stat-box:hover {
+            border-color: #00d9ff;
+            transform: translateY(-3px);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #00d9ff;
+        }
+
+        .log-container {
+            background: rgba(15, 52, 96, 0.4);
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            border: 2px solid rgba(0, 217, 255, 0.2);
+        }
+
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            animation: slideIn 0.3s ease;
+        }
+
+        .log-time {
+            color: #888;
+            margin-right: 10px;
+        }
+
+        .log-info { color: #00d9ff; }
+        .log-success { color: #00ff88; }
+        .log-error { color: #ff6b6b; }
+        .log-warning { color: #ffd93d; }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: rgba(15, 52, 96, 0.4);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+            border: 2px solid rgba(0, 217, 255, 0.2);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d9ff 0%, #e94560 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .alert-success {
+            background: rgba(0, 255, 136, 0.2);
+            border-left: 4px solid #00ff88;
+        }
+
+        .alert-error {
+            background: rgba(255, 107, 107, 0.2);
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .processing {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        /* Scrollbar styling */
+        .log-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .log-container::-webkit-scrollbar-track {
+            background: rgba(15, 52, 96, 0.2);
+            border-radius: 10px;
+        }
+
+        .log-container::-webkit-scrollbar-thumb {
+            background: #00d9ff;
+            border-radius: 10px;
+        }
+
+        .log-container::-webkit-scrollbar-thumb:hover {
+            background: #e94560;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 ROBLOX FRIENDS TOOL</h1>
+            <p>Fast Friend Request Manager</p>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <!-- Authentication Card -->
+        <div class="card" id="authCard">
+            <h2>🔑 Authentication</h2>
+            <div class="input-group">
+                <label for="apiKeyInput">🔐 API Key:</label>
+                <input type="text" id="apiKeyInput" placeholder="Enter your API key (get from admin)">
+            </div>
+            <div class="input-group">
+                <label for="cookieInput">.ROBLOSECURITY Cookie:</label>
+                <input type="text" id="cookieInput" placeholder="Enter your .ROBLOSECURITY cookie">
+            </div>
+            <div class="input-group">
+                <label for="trackerInput">RBXBrowserTrackerID (optional):</label>
+                <input type="text" id="trackerInput" placeholder="Optional browser tracker ID">
+            </div>
+            <button class="btn btn-primary" id="connectBtn" onclick="connect()">
+                🔗 CONNECT
+            </button>
+        </div>
+
+        <!-- Stats Card -->
+        <div class="card hidden" id="statsCard">
+            <h2>📊 Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">📊 Status</div>
+                    <div class="stat-value" id="statusValue">Disconnected</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">📨 Requests</div>
+                    <div class="stat-value" id="requestsValue">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">✅ Accepted</div>
+                    <div class="stat-value" id="acceptedValue">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">⏭️ Skipped</div>
+                    <div class="stat-value" id="skippedValue">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">⚡ Speed</div>
+                    <div class="stat-value" id="rpsValue">0 req/s</div>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar">0%</div>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-secondary" onclick="saveJson()">
+                    💾 Save IDs to JSON
+                </button>
+                <button class="btn btn-primary" onclick="acceptAll()">
+                    ✨ Accept All Requests
+                </button>
+            </div>
+        </div>
+
+        <!-- Logs Card -->
+        <div class="card hidden" id="logsCard">
+            <h2>📝 Activity Log</h2>
+            <div class="log-container" id="logContainer">
+                <div class="log-entry log-info">
+                    <span class="log-time">[--:--:--]</span>
+                    <span>ℹ️  Waiting for connection...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            Made with ❤️ | Use responsibly
+        </div>
+    </div>
+
+    <script>
+        let sessionId = null;
+        let statusInterval = null;
+        let apiKey = null;
+
+        function showAlert(message, type = 'success') {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            container.appendChild(alert);
+
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        function addLog(message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const time = new Date().toLocaleTimeString();
+            const icons = {
+                info: 'ℹ️',
+                success: '✅',
+                error: '❌',
+                warning: '⚠️'
+            };
+
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.innerHTML = `
+                <span class="log-time">[${time}]</span>
+                <span>${icons[type]}  ${message}</span>
+            `;
+
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        async function connect() {
+            apiKey = document.getElementById('apiKeyInput').value.trim();
+            const cookie = document.getElementById('cookieInput').value.trim();
+            const tracker = document.getElementById('trackerInput').value.trim();
+
+            if (!apiKey) {
+                showAlert('Please enter API key!', 'error');
+                return;
+            }
+
+            if (!cookie) {
+                showAlert('Please enter .ROBLOSECURITY cookie!', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('connectBtn');
+            btn.disabled = true;
+            btn.textContent = '🔄 Connecting...';
+
+            addLog('Connecting to Roblox...', 'info');
+
+            try {
+                const response = await fetch('/api/connect', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-API-Key': apiKey
+                    },
+                    body: JSON.stringify({ cookie, tracker, api_key: apiKey })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    sessionId = data.session_id;
+                    addLog('Successfully connected!', 'success');
+                    showAlert(data.message, 'success');
+
+                    document.getElementById('statusValue').textContent = 'Connected';
+                    document.getElementById('statsCard').classList.remove('hidden');
+                    document.getElementById('logsCard').classList.remove('hidden');
+                    document.getElementById('authCard').style.display = 'none';
+                } else {
+                    addLog(`Connection failed: ${data.error}`, 'error');
+                    showAlert(data.error, 'error');
+                    btn.disabled = false;
+                    btn.textContent = '🔗 CONNECT';
+                }
+            } catch (error) {
+                addLog(`Error: ${error.message}`, 'error');
+                showAlert('Connection failed!', 'error');
+                btn.disabled = false;
+                btn.textContent = '🔗 CONNECT';
+            }
+        }
+
+        async function saveJson() {
+            if (!sessionId || !apiKey) return;
+
+            addLog('Fetching friend requests...', 'info');
+
+            try {
+                const response = await fetch('/api/save-json', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-API-Key': apiKey
+                    },
+                    body: JSON.stringify({ session_id: sessionId, api_key: apiKey })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    addLog(data.message, 'success');
+                    showAlert(data.message, 'success');
+                } else {
+                    addLog(`Error: ${data.error}`, 'error');
+                    showAlert(data.error, 'error');
+                }
+            } catch (error) {
+                addLog(`Error: ${error.message}`, 'error');
+                showAlert('Failed to save IDs!', 'error');
+            }
+        }
+
+        async function acceptAll() {
+            if (!sessionId || !apiKey) return;
+
+            if (!confirm('Accept all friend requests (except those in JSON)?')) {
+                return;
+            }
+
+            addLog('Starting bulk accept...', 'info');
+
+            try {
+                const response = await fetch('/api/accept-all', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-API-Key': apiKey
+                    },
+                    body: JSON.stringify({ session_id: sessionId, api_key: apiKey })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    addLog(data.message, 'success');
+                    startStatusPolling();
+                } else {
+                    addLog(`Error: ${data.error}`, 'error');
+                    showAlert(data.error, 'error');
+                }
+            } catch (error) {
+                addLog(`Error: ${error.message}`, 'error');
+                showAlert('Failed to start processing!', 'error');
+            }
+        }
+
+        function startStatusPolling() {
+            if (statusInterval) return;
+
+            statusInterval = setInterval(async () => {
+                try {
+                    const response = await fetch('/api/status', {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'X-API-Key': apiKey
+                        },
+                        body: JSON.stringify({ session_id: sessionId, api_key: apiKey })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        document.getElementById('acceptedValue').textContent = data.accepted || 0;
+                        document.getElementById('skippedValue').textContent = data.skipped || 0;
+                        document.getElementById('rpsValue').textContent = `${(data.rps || 0).toFixed(1)} req/s`;
+
+                        if (data.total > 0) {
+                            const progress = ((data.accepted + data.skipped) / data.total * 100).toFixed(0);
+                            document.getElementById('progressBar').style.width = `${progress}%`;
+                            document.getElementById('progressBar').textContent = `${progress}%`;
+                            document.getElementById('requestsValue').textContent = data.total;
+                        }
+
+                        // Добавляем новые логи
+                        if (data.logs && data.logs.length > 0) {
+                            data.logs.forEach(log => {
+                                if (!document.getElementById('logContainer').textContent.includes(log)) {
+                                    addLog(log, 'info');
+                                }
+                            });
+                        }
+
+                        if (!data.running) {
+                            clearInterval(statusInterval);
+                            statusInterval = null;
+                            showAlert('Processing completed!', 'success');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Status poll error:', error);
+                }
+            }, 500);
+        }
+    </script>
+</body>
+</html>
