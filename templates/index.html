@@ -368,7 +368,10 @@
 
             <div class="actions">
                 <button class="btn btn-secondary" onclick="saveJson()">
-                    💾 Save IDs to JSON
+                    💾 Save IDs to JSON (Replace)
+                </button>
+                <button class="btn btn-secondary" onclick="addToJson()" style="background: linear-gradient(135deg, #00ff88 0%, #00aa5a 100%);">
+                    ➕ Add New IDs to JSON
                 </button>
                 <button class="btn btn-primary" onclick="acceptAll()">
                     ✨ Accept All Requests
@@ -513,6 +516,36 @@
             } catch (error) {
                 addLog(`Error: ${error.message}`, 'error');
                 showAlert('Failed to save IDs!', 'error');
+            }
+        }
+
+        async function addToJson() {
+            if (!sessionId || !apiKey) return;
+
+            addLog('Adding new IDs to existing list...', 'info');
+
+            try {
+                const response = await fetch('/api/add-to-json', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-API-Key': apiKey
+                    },
+                    body: JSON.stringify({ session_id: sessionId, api_key: apiKey })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    addLog(data.message, 'success');
+                    showAlert(`✅ ${data.message}`, 'success');
+                } else {
+                    addLog(`Error: ${data.error}`, 'error');
+                    showAlert(data.error, 'error');
+                }
+            } catch (error) {
+                addLog(`Error: ${error.message}`, 'error');
+                showAlert('Failed to add IDs!', 'error');
             }
         }
 
