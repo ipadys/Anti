@@ -379,7 +379,7 @@ def get_requests():
 @app.route('/api/save-json', methods=['POST'])
 @require_api_key
 def save_json():
-    """Сохранить ID в JSON"""
+    """Сохранить ID в JSON (перезапись)"""
     try:
         data = request.json
         session_id = data.get('session_id')
@@ -393,6 +393,46 @@ def save_json():
         return jsonify({
             'success': True,
             'message': 'IDs saved to requests.json'
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/add-to-json', methods=['POST'])
+@require_api_key
+def add_to_json():
+    """Добавить новые ID к существующим в JSON"""
+    try:
+        data = request.json
+        session_id = data.get('session_id')
+        
+        if not session_id or session_id not in active_tools:
+            return jsonify({'success': False, 'error': 'Invalid session'}), 400
+        
+        tool = active_tools[session_id]
+        
+        # Получаем текущие заявки
+        new_ids = tool.get_friend_requests()
+        
+        # Загружаем существующие ID
+        json_data = load_json_file(JSON_FILE, {"ids": []})
+        existing_ids = set(json_data.get('ids', []))
+        
+        # Добавляем новые (без дубликатов)
+        before_count = len(existing_ids)
+        existing_ids.update(new_ids)
+        after_count = len(existing_ids)
+        
+        # Сохраняем
+        save_json_file(JSON_FILE, {"ids": list(existing_ids)})
+        
+        added_count = after_count - before_count
+        
+        return jsonify({
+            'success': True,
+            'message': f'Added {added_count} new IDs (total: {after_count})',
+            'added': added_count,
+            'total': after_count
         })
         
     except Exception as e:
